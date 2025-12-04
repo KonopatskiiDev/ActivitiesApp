@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Persistence;
 using Resend;
 
@@ -25,11 +26,23 @@ builder.Services.AddControllers(opt =>
 });
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
-    var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL")
         ?? throw new Exception("Database connection not configured");
-    opt.UseNpgsql(connectionString);
-    //opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
+    var databaseUri = new Uri(databaseUrl);
+    var userInfo = databaseUri.UserInfo.Split(':');
+
+    var builder = new NpgsqlConnectionStringBuilder
+    {
+        Host = databaseUri.Host,
+        Port = databaseUri.Port,
+        Username = userInfo[0],
+        Password = userInfo[1],
+        Database = databaseUri.AbsolutePath.TrimStart('/'),
+        SslMode = SslMode.Prefer,
+        TrustServerCertificate = true
+    };
+    opt.UseNpgsql(builder.ToString());
 });
 builder.Services.AddCors();
 builder.Services.AddSignalR();
