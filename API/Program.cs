@@ -25,7 +25,12 @@ builder.Services.AddControllers(opt =>
 });
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+        ?? throw new Exception("Database connection not configured");
+    opt.UseNpgsql(connectionString);
+    //opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
 });
 builder.Services.AddCors();
 builder.Services.AddSignalR();
@@ -82,20 +87,37 @@ app.MapGroup("api").MapIdentityApi<User>(); // api/login
 app.MapHub<CommentHub>("/comments");
 app.MapFallbackToController("Index", "Fallback");
 
-using var scope = app.Services.CreateScope();
-var services = scope.ServiceProvider;
-
-try
+// using var scope = app.Services.CreateScope();
+// var services = scope.ServiceProvider;
+using (var scope = app.Services.CreateScope())
 {
+    var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
     var userManager = services.GetRequiredService<UserManager<User>>();
-    await context.Database.MigrateAsync();
-    await DbInitializer.SeedData(context, userManager);
-}
-catch (Exception ex)
-{
     var logger = services.GetRequiredService<ILogger<Program>>();
-    logger.LogError(ex, "An error occured during migration.");
+
+    try
+    {
+        await context.Database.MigrateAsync();
+        await DbInitializer.SeedData(context, userManager);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+    }
 }
+
+// try
+// {
+//     var context = services.GetRequiredService<AppDbContext>();
+//     var userManager = services.GetRequiredService<UserManager<User>>();
+//     await context.Database.MigrateAsync();
+//     await DbInitializer.SeedData(context, userManager);
+// }
+// catch (Exception ex)
+// {
+//     var logger = services.GetRequiredService<ILogger<Program>>();
+//     logger.LogError(ex, "An error occured during migration.");
+// }
 
 app.Run();
