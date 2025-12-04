@@ -25,8 +25,7 @@ builder.Services.AddControllers(opt =>
 });
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+    var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
         ?? throw new Exception("Database connection not configured");
     opt.UseNpgsql(connectionString);
     //opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
