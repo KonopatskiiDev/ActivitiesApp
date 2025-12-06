@@ -88,7 +88,8 @@ app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
     .AllowCredentials()
     .WithOrigins("http://localhost:3000",
                  "https://localhost:3000",
-                 "https://vigilant-caring-production.up.railway.app"));
+                 "https://vigilant-caring-production.up.railway.app",
+                 "https://activitiesapp-production-3389.up.railway.app"));
 
 app.UseAuthentication();
 app.UseAuthorization();
