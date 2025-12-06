@@ -9,7 +9,6 @@ using FluentValidation;
 using Infrastructure.Photos;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -93,12 +92,6 @@ app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
                  "https://vigilant-caring-production.up.railway.app",
                  "https://activitiesapp-production-3389.up.railway.app"));
 
-app.UseCookiePolicy(new CookiePolicyOptions
-{
-    MinimumSameSitePolicy = SameSiteMode.None,
-    Secure = CookieSecurePolicy.Always,
-    HttpOnly = HttpOnlyPolicy.Always
-});
 app.UseAuthentication();
 app.UseAuthorization();
 
