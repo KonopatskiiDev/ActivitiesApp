@@ -9,6 +9,7 @@ using FluentValidation;
 using Infrastructure.Photos;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -70,21 +71,7 @@ builder.Services.AddIdentityApiEndpoints<User>(opt =>
 })
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<AppDbContext>();
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.None;   // critical
-});
 
-// Identity API does NOT register cookie auth scheme automatically
-builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
-.AddCookie(IdentityConstants.ApplicationScheme, options =>
-{
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.None;
-});
 builder.Services.AddAuthorization(opt =>
 {
     opt.AddPolicy("IsActivityHost", policy =>
@@ -106,6 +93,12 @@ app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
                  "https://vigilant-caring-production.up.railway.app",
                  "https://activitiesapp-production-3389.up.railway.app"));
 
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.None,
+    Secure = CookieSecurePolicy.Always,
+    HttpOnly = HttpOnlyPolicy.Always
+});
 app.UseAuthentication();
 app.UseAuthorization();
 
