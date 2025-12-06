@@ -70,6 +70,21 @@ builder.Services.AddIdentityApiEndpoints<User>(opt =>
 })
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<AppDbContext>();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;   // critical
+});
+
+// Identity API does NOT register cookie auth scheme automatically
+builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
+.AddCookie(IdentityConstants.ApplicationScheme, options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;
+});
 builder.Services.AddAuthorization(opt =>
 {
     opt.AddPolicy("IsActivityHost", policy =>
