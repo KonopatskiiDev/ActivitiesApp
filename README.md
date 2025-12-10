@@ -125,10 +125,10 @@ Environment variables:
 VITE\_API\_URL=https://activitiesapp-production-3389.up.railway.app/api
 VITE\_COMMENTS\_URL=wss://activitiesapp-production-3389.up.railway.app/comments
 
-### Limitations
+## Limitations
 The application is not optimized for mobile devices (mobile layout is not supported).
 
-### Known Browser Issues
+## Known Browser Issues
 
 Because the application uses cookie-based authentication with:
 
@@ -137,7 +137,7 @@ options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
 …and because the frontend and backend are served on different subdomains, some browsers apply strict 3rd-party cookie rules.
 
-### Chrome Incognito Mode
+## Chrome Incognito Mode
 
 Chrome Incognito blocks third-party cookies, even with SameSite=None.
 
@@ -150,7 +150,7 @@ Subsequent call to /account/user-info returning 204 No Content
 
 Redirect back to the login page
 
-### Works reliably in:
+## Works reliably in:
 
 Chrome (normal mode)
 
@@ -162,10 +162,10 @@ Safari (normal mode)
 
 This is a known limitation of cookie-based auth when backend and frontend are on separate domains.
 
-### For production, the recommended industry solution is to run frontend and backend under the same domain using a reverse proxy (Nginx, YARP, etc.).
+## For production, the recommended industry solution is to run frontend and backend under the same domain using a reverse proxy (Nginx, YARP, etc.).
 But this is perfectly acceptable for a portfolio/demo project.
 
-### Local Development
+## Local Development
 Backend
 cd API
 dotnet watch run
@@ -174,8 +174,5 @@ Frontend
 cd client
 npm install
 npm run dev
-
-#### Contact
-If you have any questions or suggestions — feel free to reach out!
 
 
